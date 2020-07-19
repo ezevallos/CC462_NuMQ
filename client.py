@@ -12,7 +12,7 @@ IP = "3.15.232.180"
 # PORT = 1234 # CAMBIAR POR PUERTO DE AWS
 PORT = 5555
 
-my_queue = input("Username: ")
+my_queue = input("Queue: ")
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect((IP, PORT))
 client_socket.setblocking(False)
