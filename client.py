@@ -12,31 +12,31 @@ IP = "3.15.232.180"
 # PORT = 1234 # CAMBIAR POR PUERTO DE AWS
 PORT = 5555
 
-my_username = input("Username: ")
+my_queue = input("Username: ")
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect((IP, PORT))
 client_socket.setblocking(False)
 
-username = my_username.encode('utf-8')
-username_header = f"{len(username):<{HEADER_LENGTH}}".encode('utf-8')
-client_socket.send(username_header + username)
+queue = my_queue.encode('utf-8')
+queue_header = f"{len(queue):<{HEADER_LENGTH}}".encode('utf-8')
+client_socket.send(queue_header + queue)
 
 while True:
-	message = input(f"{my_username} > ")
+	message = input(f"{my_queue} > ")
 	try:
 		while True:
-			username_header = client_socket.recv(HEADER_LENGTH)
-			if not len(username):
+			queue_header = client_socket.recv(HEADER_LENGTH)
+			if not len(queue):
 				print("connection closed by the server")
 				sys.exit()
-			username_length = int(username_length.decode('utf-8').strip())
-			username = client_socket.recv(username_length).decode('utf-8')
+			queue_length = int(queue_length.decode('utf-8').strip())
+			queue = client_socket.recv(queue_length).decode('utf-8')
 
 			message_header = client_socket.recv(HEADER_LENGTH)
 			message_length = int(message_header.decode('utf-8').strip())
 			message = client_socket.recv(message_length).decode('utf-8')
 
-			print(f"{username} > {message}")
+			print(f"{queue} > {message}")
 	except IOError as e:
 		if e.errno != eerno.EAGAIN and e.errno != errno.EWOULDBLOCK:
 			print('Reading error: ', str(e))
