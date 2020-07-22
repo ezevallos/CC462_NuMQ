@@ -1,6 +1,7 @@
 package producer;
 
 import java.io.IOException;
+import java.util.Scanner;
 import numq.libs.Channel;
 import numq.libs.Connection;
 
@@ -16,15 +17,18 @@ public class Producer {
     public static void main(String[] args) {
         String hostAddr = "localhost";
         int numPort = 5555;
+        String queueName = "hello";
+        String body = "Hello world!";
         try {
             Connection connection = new Connection(hostAddr, numPort);
             Channel channel = connection.getChannel();
             
             //Declara queue con el que trabajara
-            channel.declareQueue("hello");
+            channel.declareQueue(queueName);
             for(int i=0;i<10;i++){
                 try {
-                    channel.send(null, "hello", "Hello world!");
+                    channel.send(null, queueName, body);
+                    System.out.println("Enviado a queue: "+queueName+", Mensaje: "+body);
                 } catch (Exception ex) {
                     System.err.println(ex);
                 }
@@ -34,6 +38,7 @@ public class Producer {
             System.err.println(ex);
         }
         
+        Scanner sc = new Scanner(System.in);
+        String end = sc.nextLine(); //Enter para terminar
     }
-    
 }

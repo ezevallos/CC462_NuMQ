@@ -21,8 +21,9 @@ public class Consumer {
             Connection connection = new Connection(hostAddr, numPort);
             Channel channel = connection.getChannel();
             channel.declareQueue(queueName);
+            System.out.println("Consumiendo desde Queue: "+queueName);
             channel.consume(queueName, true, (String body) -> {
-                System.out.println(body);
+                System.out.println(queueName+" > "+body);
             });
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
