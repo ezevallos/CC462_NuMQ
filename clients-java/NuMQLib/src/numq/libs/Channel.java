@@ -52,7 +52,7 @@ public class Channel {
      */
     public String declareQueue() throws IOException{
         String genQueue = hash();
-        declareTopic(genQueue);
+        declareQueue(genQueue);
         return genQueue;
     }
     

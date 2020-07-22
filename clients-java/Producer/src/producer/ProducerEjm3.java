@@ -6,11 +6,12 @@ import numq.libs.Channel;
 import numq.libs.Connection;
 
 /**
- * Ejemplo 1
- * Producer envia un mensaje a una cola
+ * Ejemplo 3
+ * Producer envia un mensaje un topico para que este lo distribuya 
+ * las queues suscritas
  * @author Victor
  */
-public class ProducerEjm1 {
+public class ProducerEjm3 {
 
     /**
      * @param args the command line arguments
@@ -18,8 +19,7 @@ public class ProducerEjm1 {
     public static void main(String[] args) {
         String hostAddr = "localhost";
         int numPort = 5555;
-        String queueName = "hello";
-        String body = "Hello world!";
+        String topicName = "logs";
         try {
             //Conecta al middleware
             Connection connection = new Connection(hostAddr, numPort);
@@ -28,13 +28,14 @@ public class ProducerEjm1 {
             Channel channel = connection.getChannel();
             
             //Declara queue con el que trabajara
-            channel.declareQueue(queueName);
+            channel.declareTopic(topicName);
             
             //Envia mensajes
             for(int i=0;i<10;i++){
+                String msg = "Registro nro "+(i+1);
                 try {
-                    channel.producerSend(null, queueName, body);
-                    System.out.println("Enviado a queue: "+queueName+", Mensaje: "+body);
+                    channel.producerSend(topicName, null, msg);
+                    System.out.println("Enviado a topic: "+topicName+", Mensaje: "+msg);
                 } catch (Exception ex) {
                     System.err.println(ex);
                 }
