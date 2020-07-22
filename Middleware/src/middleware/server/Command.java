@@ -6,7 +6,7 @@ package middleware.server;
  */
 public class Command {
     //TODO: ver si es necesario usar mas campos a parte del contenido de mensaje
-    public static final int CMD_DEC_EXCH = 1;
+    public static final int CMD_DEC_TOPIC = 1;
     public static final int CMD_DEC_QUEUE = 2;
     public static final int CMD_BIND_QUEUE = 3;
     public static final int CMD_SEND = 4;
@@ -14,7 +14,7 @@ public class Command {
     public static final int CMD_CONS_ACK = 6;
     
     private int cmd;
-    private String exchName;
+    private String topicName;
     private String queueName;
     private String body;
     
@@ -24,8 +24,8 @@ public class Command {
         Command cmmd = null;
         int cmd_num = Integer.parseInt(msg.substring(0, 1));
         switch(cmd_num){
-            case CMD_DEC_EXCH:
-                cmmd = parseDecExch(msg);
+            case CMD_DEC_TOPIC:
+                cmmd = parseDecTopic(msg);
                 break;
             case CMD_DEC_QUEUE:
                 cmmd = parseDecQueue(msg);
@@ -48,11 +48,11 @@ public class Command {
         return cmmd;
     }
     
-    private static Command parseDecExch(String msg){
+    private static Command parseDecTopic(String msg){
         Command message = new Command();
         String[] tokens = msg.split(",");
-        message.setCmd(CMD_DEC_EXCH);
-        message.setExchName(tokens[1]);
+        message.setCmd(CMD_DEC_TOPIC);
+        message.setTopicName(tokens[1]);
         return message;
     }
     
@@ -68,7 +68,7 @@ public class Command {
         Command message = new Command();
         String[] tokens = msg.split(",");
         message.setCmd(CMD_BIND_QUEUE);
-        message.setExchName(tokens[1]);
+        message.setTopicName(tokens[1]);
         message.setQueueName(tokens[2]);
         return message;
     }
@@ -77,8 +77,14 @@ public class Command {
         Command message = new Command();
         String[] tokens = msg.split(",");
         message.setCmd(CMD_SEND);
-        message.setExchName(tokens[1]);
-        message.setQueueName(tokens[2]);
+        if("".equals(tokens[1]))
+            message.setTopicName(null);
+        else
+            message.setTopicName(tokens[1]);
+        if("".equals(tokens[2]))
+            message.setQueueName(null);
+        else
+            message.setQueueName(tokens[2]);
         message.setBody(tokens[3]);
         return message;
     }
@@ -107,12 +113,12 @@ public class Command {
         this.cmd = cmd;
     }
 
-    public String getExchName() {
-        return exchName;
+    public String getTopicName() {
+        return topicName;
     }
 
-    private void setExchName(String exchName) {
-        this.exchName = exchName;
+    private void setTopicName(String topicName) {
+        this.topicName = topicName;
     }
 
     public String getQueueName() {

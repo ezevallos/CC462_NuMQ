@@ -16,6 +16,7 @@ public class Client implements Runnable{
     private final DataOutputStream out;
     private boolean running = true;
     private ClientListener mListener;
+    private boolean available;  //Para consumo
     
     public Client(Integer id, Socket socket) throws IOException{
         mId = id;
@@ -23,6 +24,7 @@ public class Client implements Runnable{
         in = new DataInputStream(mSocket.getInputStream());
         out = new DataOutputStream(mSocket.getOutputStream());
         //in.read
+        available = false;
     }
     
     public void sendMessage(String msg) throws IOException{
@@ -62,4 +64,11 @@ public class Client implements Runnable{
         void messageRcvd(Integer idClient,String msg);
     }
     
+    public void setAvailable(boolean available){
+        this.available = available;
+    }
+    
+    public boolean isAvailable(){
+        return available;
+    }
 }

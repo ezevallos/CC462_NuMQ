@@ -4,6 +4,6 @@ package middleware.server;
  *
  * @author Victor
  */
-public class Exchange {
+public class Topic {
     //TODO: Programar el exchange para ejemplo3
 }
