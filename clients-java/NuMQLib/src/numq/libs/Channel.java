@@ -7,7 +7,8 @@ import java.net.Socket;
 import java.util.Random;
 
 /**
- *
+ * Clase para manejar el envio y recepcion de comandos
+ * del cliente al middleware y viceversa
  * @author Victor
  */
 public class Channel {
@@ -21,32 +22,70 @@ public class Channel {
         out = new DataOutputStream(mSocket.getOutputStream());
     }
     
+    /**
+     * Envia comando al middleware como texto plano
+     * @param msg
+     * @throws IOException 
+     */
     private void sendMsg(Command msg) throws IOException{
         out.writeUTF(msg.toString());
+        //System.out.println("Enviando comando: "+msg);
     }
     
+    /**
+     * Declara un Topic en el middleware que se usara
+     * El middleware lo creara si no existe
+     * @param topicName
+     * @throws IOException 
+     */
     public void declareTopic(String topicName) throws IOException{
         this.topicName = topicName;
         Command msg = Command.createDecTopicMsg(topicName);
         sendMsg(msg);
     }
     
-    public void declareQueue() throws IOException{
+    /**
+     * Declara un Queue en el middleware
+     * El middlware lo creara si no existe
+     * @return El nombre queue autogenerado
+     * @throws IOException 
+     */
+    public String declareQueue() throws IOException{
         String genQueue = hash();
         declareTopic(genQueue);
+        return genQueue;
     }
     
+    /**
+     * Declara un Queue en el middleware
+     * El middlware lo creara si no existe
+     * @param queueName
+     * @throws IOException 
+     */
     public void declareQueue(String queueName) throws IOException{
         this.queueName = queueName;
         Command msg = Command.createDecQueueMsg(queueName);
         sendMsg(msg);
     }
     
+    /**
+     * Suscribe un queue a un topic en el middleware
+     * @param topicName
+     * @param queueName
+     * @throws IOException 
+     */
     public void bindQueue(String topicName, String queueName) throws IOException{
         Command msg = Command.createBindQueueMsg(topicName, queueName);
         sendMsg(msg);
     }
     
+    /**
+     * Producer envia mensaje a un topic o queue
+     * @param topicName
+     * @param queueName
+     * @param body
+     * @throws Exception 
+     */
     public void send(String topicName,String queueName,String body) throws Exception{
         if(body==null || body.isEmpty())
             throw new Exception("Body no debe ser vacio o nulo");
@@ -61,17 +100,37 @@ public class Channel {
             msg = Command.createSendMsg(topicName, "", body);
         }
         sendMsg(msg);
-        System.out.println("Enviado a "+topicName+":"+queueName);
-        System.out.println("\tMensaje: "+body);
+        //System.out.println("Enviado a "+topicName+":"+queueName+", Mensaje: "+body);
     }
 
+    /**
+     * Consumidor indica al middleware que consumira de la queue especificada
+     * @param queueName
+     * @param autoAck Indica si se notificara automaticamente que esta disponible despues de recibir
+     * @param callBack 
+     */
     public void consume(String queueName,boolean autoAck,CallBack callBack){
         Consume mConsume = new Consume(queueName, autoAck, callBack);
         mConsume.start();
     }
     
+    /**
+     * Notifica al middleware que el consumidor completo su trabajo y esta disponible
+     * @param queueName
+     * @throws IOException 
+     */
     public void sendConsAck(String queueName) throws IOException{
         Command msg = Command.createConsAckMsg(queueName);
+        sendMsg(msg);
+    }
+    
+    /**
+     * Envia coman
+     * @param queueName
+     * @throws IOException 
+     */
+    public void sendConsume(String queueName) throws IOException{
+        Command msg = Command.createConsumeMsg(queueName);
         sendMsg(msg);
     }
     
@@ -116,14 +175,13 @@ public class Channel {
         @Override
         public void run() {
             try {
-                sendConsAck(queueName); //Avisa al servidor que inicia consumo y pide que se envie
-                System.out.println("Consumiendo desde: "+queueName);
+                sendConsume(queueName); //Avisa al servidor que inicia consumo
                 while(running){
                     String msg = in.readUTF();
                     mCallBack.onResponse(msg);
                     
                     if(autoAck){
-                        sendConsAck(queueName);
+                        sendConsAck(queueName); //Confirma que acabo su tarea y esta disponible
                     }      
                 }
             } catch (IOException ex) {
