@@ -2,4 +2,5 @@
 private.xml
 /clients-java/Producer/build/
 /clients-java/Consumer/build/
+/clients-java/NuMQLib/build/
 /clients-java/NuMQLib/dist/
