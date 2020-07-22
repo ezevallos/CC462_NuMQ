@@ -27,7 +27,7 @@ public class Producer {
             channel.declareQueue(queueName);
             for(int i=0;i<10;i++){
                 try {
-                    channel.send(null, queueName, body);
+                    channel.producerSend(null, queueName, body);
                     System.out.println("Enviado a queue: "+queueName+", Mensaje: "+body);
                 } catch (Exception ex) {
                     System.err.println(ex);

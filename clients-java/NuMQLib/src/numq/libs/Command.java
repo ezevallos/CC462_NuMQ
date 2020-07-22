@@ -4,14 +4,20 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
+ * Comandos que se envian en la comunicacion Cliente-Middleware
+ * CMD_DEC_TOPIC: "1,topic_name"
+ * CMD_DEC_QUEUE: "2,queue_name"
+ * CMD_SUBS_QUEUE: "3,topic_name,queue_name"
+ * CMD_PROD_SEND: "4,topic_name,queue_name,body"
+ * CMD_CONSUME: "5,queue_name"
+ * CMD_CONS_ACK: "6,queue_name"
  * @author Victor
  */
 public class Command {
     public static final int CMD_DEC_TOPIC = 1;
     public static final int CMD_DEC_QUEUE = 2;
-    public static final int CMD_BIND_QUEUE = 3;
-    public static final int CMD_SEND = 4;
+    public static final int CMD_SUBS_QUEUE = 3;
+    public static final int CMD_PROD_SEND = 4;
     public static final int CMD_CONSUME = 5;
     public static final int CMD_CONS_ACK = 6;
     private int commandNum;
@@ -35,7 +41,7 @@ public class Command {
     
     protected static Command createBindQueueMsg(String topicName,String queueName){
         Command msg = new Command();
-        msg.setCommandNum(CMD_BIND_QUEUE);
+        msg.setCommandNum(CMD_SUBS_QUEUE);
         msg.addValue(topicName);
         msg.addValue(queueName);
         return msg;
@@ -43,7 +49,7 @@ public class Command {
     
     protected static Command createSendMsg(String topicName,String queueName, String body){
         Command msg = new Command();
-        msg.setCommandNum(CMD_SEND);
+        msg.setCommandNum(CMD_PROD_SEND);
         msg.addValue(topicName);
         msg.addValue(queueName);
         msg.addValue(body);

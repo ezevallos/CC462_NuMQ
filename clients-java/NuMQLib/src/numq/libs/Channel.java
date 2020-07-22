@@ -27,7 +27,7 @@ public class Channel {
      * @param msg
      * @throws IOException 
      */
-    private void sendMsg(Command msg) throws IOException{
+    private void sendCommand(Command msg) throws IOException{
         out.writeUTF(msg.toString());
         //System.out.println("Enviando comando: "+msg);
     }
@@ -41,7 +41,7 @@ public class Channel {
     public void declareTopic(String topicName) throws IOException{
         this.topicName = topicName;
         Command msg = Command.createDecTopicMsg(topicName);
-        sendMsg(msg);
+        sendCommand(msg);
     }
     
     /**
@@ -65,7 +65,7 @@ public class Channel {
     public void declareQueue(String queueName) throws IOException{
         this.queueName = queueName;
         Command msg = Command.createDecQueueMsg(queueName);
-        sendMsg(msg);
+        sendCommand(msg);
     }
     
     /**
@@ -74,9 +74,9 @@ public class Channel {
      * @param queueName
      * @throws IOException 
      */
-    public void bindQueue(String topicName, String queueName) throws IOException{
+    public void subscribeQueue(String topicName, String queueName) throws IOException{
         Command msg = Command.createBindQueueMsg(topicName, queueName);
-        sendMsg(msg);
+        sendCommand(msg);
     }
     
     /**
@@ -86,7 +86,7 @@ public class Channel {
      * @param body
      * @throws Exception 
      */
-    public void send(String topicName,String queueName,String body) throws Exception{
+    public void producerSend(String topicName,String queueName,String body) throws Exception{
         if(body==null || body.isEmpty())
             throw new Exception("Body no debe ser vacio o nulo");
         
@@ -99,7 +99,7 @@ public class Channel {
         }else{
             msg = Command.createSendMsg(topicName, "", body);
         }
-        sendMsg(msg);
+        sendCommand(msg);
         //System.out.println("Enviado a "+topicName+":"+queueName+", Mensaje: "+body);
     }
 
@@ -121,7 +121,7 @@ public class Channel {
      */
     public void sendConsAck(String queueName) throws IOException{
         Command msg = Command.createConsAckMsg(queueName);
-        sendMsg(msg);
+        sendCommand(msg);
     }
     
     /**
@@ -131,7 +131,7 @@ public class Channel {
      */
     public void sendConsume(String queueName) throws IOException{
         Command msg = Command.createConsumeMsg(queueName);
-        sendMsg(msg);
+        sendCommand(msg);
     }
     
     public String getTopicName() {
