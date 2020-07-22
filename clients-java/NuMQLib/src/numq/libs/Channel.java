@@ -13,7 +13,7 @@ import java.util.Random;
 public class Channel {
     private final DataInputStream in;
     private final DataOutputStream out;
-    private String exchName;
+    private String topicName;
     private String queueName;
     
     public Channel(Socket mSocket) throws IOException{
@@ -21,47 +21,47 @@ public class Channel {
         out = new DataOutputStream(mSocket.getOutputStream());
     }
     
-    private void sendMsg(Message msg) throws IOException{
+    private void sendMsg(Command msg) throws IOException{
         out.writeUTF(msg.toString());
     }
     
-    public void declareExchange(String exchName) throws IOException{
-        this.exchName = exchName;
-        Message msg = Message.createDecExchMsg(exchName);
+    public void declareTopic(String topicName) throws IOException{
+        this.topicName = topicName;
+        Command msg = Command.createDecTopicMsg(topicName);
         sendMsg(msg);
     }
     
     public void declareQueue() throws IOException{
         String genQueue = hash();
-        declareExchange(genQueue);
+        declareTopic(genQueue);
     }
     
     public void declareQueue(String queueName) throws IOException{
         this.queueName = queueName;
-        Message msg = Message.createDecQueueMsg(queueName);
+        Command msg = Command.createDecQueueMsg(queueName);
         sendMsg(msg);
     }
     
-    public void bindQueue(String exchName, String queueName) throws IOException{
-        Message msg = Message.createBindQueueMsg(exchName, queueName);
+    public void bindQueue(String topicName, String queueName) throws IOException{
+        Command msg = Command.createBindQueueMsg(topicName, queueName);
         sendMsg(msg);
     }
     
-    public void send(String exchName,String queueName,String body) throws Exception{
+    public void send(String topicName,String queueName,String body) throws Exception{
         if(body==null || body.isEmpty())
             throw new Exception("Body no debe ser vacio o nulo");
         
-        Message msg;
+        Command msg;
         
-        if(exchName==null || exchName.isEmpty()){
+        if(topicName==null || topicName.isEmpty()){
             if(queueName==null || queueName.isEmpty())
                 throw new Exception("Debe especificar el queue");
-            msg = Message.createSendMsg("", queueName, body);
+            msg = Command.createSendMsg("", queueName, body);
         }else{
-            msg = Message.createSendMsg(exchName, "", body);
+            msg = Command.createSendMsg(topicName, "", body);
         }
         sendMsg(msg);
-        System.out.println("Enviado a "+exchName+":"+queueName);
+        System.out.println("Enviado a "+topicName+":"+queueName);
         System.out.println("\tMensaje: "+body);
     }
 
@@ -71,12 +71,12 @@ public class Channel {
     }
     
     public void sendConsAck(String queueName) throws IOException{
-        Message msg = Message.createConsAckMsg(queueName);
+        Command msg = Command.createConsAckMsg(queueName);
         sendMsg(msg);
     }
     
-    public String getExchName() {
-        return exchName;
+    public String getTopicName() {
+        return topicName;
     }
 
     public String getQueueName() {
@@ -100,14 +100,6 @@ public class Channel {
         //System.out.println(generatedString);
         return generatedString;
     }
-    
-    /*public static void main(String[] args){
-        hash();
-        hash();
-        hash();
-        hash();
-        hash();
-    }*/
     
     public class Consume extends Thread{
         private final CallBack mCallBack;
