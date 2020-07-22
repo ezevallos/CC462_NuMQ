@@ -1,8 +1,6 @@
 package consumer;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import numq.libs.Channel;
 import numq.libs.Connection;
 
