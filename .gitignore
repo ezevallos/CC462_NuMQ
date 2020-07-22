@@ -1,2 +1,4 @@
 /Middleware/build/
 private.xml
+/clients-java/Producer/build/
+/clients-java/Consumer/build/
