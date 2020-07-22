@@ -20,12 +20,14 @@ public class Connection implements Runnable{
       
     public void create() throws IOException{
         mServerSocket = new ServerSocket(mPort);
+        System.out.println("Servidor creado en puerto: "+mPort);
     }
     
     public void listen(NewConnCallBack callBack){
         mCallBack = callBack;
         Thread thread = new Thread(this);
         thread.start();
+        System.out.println("Servidor escuchando...");
     }
         
     public void stopListen(){

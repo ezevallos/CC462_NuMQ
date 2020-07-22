@@ -9,7 +9,7 @@ import java.util.Map;
  *
  * @author Victor
  */
-public class Middleware implements Runnable{
+public class Middleware{
     public static final int NUM_PORT = 5555;
     private Map<String,Queue> mQueues;
     private Map<String,Topic> mTopics;
@@ -25,7 +25,6 @@ public class Middleware implements Runnable{
         count = 0;
     }
 
-    @Override
     public void run() {
         try {
             mConn.create();
@@ -44,6 +43,7 @@ public class Middleware implements Runnable{
             Client client = new Client(++count, socket);
             mClients.put(client.getId(), client);
             client.listen(this.clientListener);
+            System.out.println("Nuevo cliente"+client.getId());
         }catch(IOException ex){
             System.err.println(ex.getMessage());
         }
@@ -86,7 +86,7 @@ public class Middleware implements Runnable{
             mTopics.put(topicName, topic);
             System.out.println("Cliente"+idClient+" declara nuevo Topic: "+topicName);
         }
-        //System.out.println("Cliente"+idClient+" declara Topic: "+topicName);
+        System.out.println("Cliente"+idClient+" usa Topic: "+topicName);
     }
 
     private void declareQueue(Integer idClient, String queueName) {
@@ -96,6 +96,7 @@ public class Middleware implements Runnable{
             mQueues.put(queueName, queue);
             System.out.println("Cliente"+idClient+" declara nuevo Queue: "+queueName);
         }
+        System.out.println("Cliente"+idClient+" usa Queue: "+queueName);
     }
 
     private void bindQueue(Integer idClient, String topicName, String queueName) {
@@ -103,6 +104,7 @@ public class Middleware implements Runnable{
     }
 
     private void send(Integer idClient, String topicName, String queueName, String body) {
+        //System.out.println("Cliente"+idClient+" envia mensaje a "+topicName+":"+queueName);
         if(topicName!=null){
             sendToTopic(idClient, topicName, body);
         }else if(queueName!=null){
@@ -112,6 +114,7 @@ public class Middleware implements Runnable{
     
     private void sendToTopic(Integer idCliente,String topicName,String body){
         //TODO: enviar a topic
+        System.out.println("Cliente"+idCliente+" envia mensaje a topico: "+topicName);
     }
     
     private void sendToQueue(Integer idCliente,String queueName,String body){
@@ -135,6 +138,7 @@ public class Middleware implements Runnable{
             return;
         }
         queue.consume(idClient);
+        System.out.println("Cliente"+idClient+" consume de queue: "+queueName);
     }
 
     private void consAck(Integer idClient, String queueName) {

@@ -35,6 +35,7 @@ public class Client implements Runnable{
         mListener = listener;
         Thread thread = new Thread(this);
         thread.start();
+        System.out.println("Escuchando a Cliente"+mId);
     }
     
     @Override
@@ -43,12 +44,14 @@ public class Client implements Runnable{
             String msg;
             try {
                 msg = in.readUTF();
+                //System.out.println("comando: "+msg);
                 mListener.messageRcvd(mId,msg);
             } catch (IOException ex) {
-                System.err.println(ex.getMessage());
-            }finally{
+                System.err.println("Cliente"+mId+" desconectado, razon: "+ex.getMessage());
                 stopListen();
-            }
+            }/*finally{
+                stopListen();
+            }*/
         }
     }
     

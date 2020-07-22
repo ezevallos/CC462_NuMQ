@@ -11,7 +11,7 @@ import java.util.concurrent.LinkedBlockingDeque;
  * @author Victor
  */
 public class Queue {
-    public static final int MAX_SIZE = 10; 
+    public static final int MAX_SIZE = 100; 
     private BlockingQueue<String> mQueue; //Tipo String por mientras
     private Set<Integer> consumersIds;
     private final String mName;
@@ -50,11 +50,12 @@ public class Queue {
                 Integer[] consIdArr = consumersIds.toArray(new Integer[consumersIds.size()]);
                 for(Integer id : consIdArr){
                     Client client = mMiddleware.getClients().get(id);
-                    if(client.isAvailable()){
+                    if(client.isAvailable()){   //Si el consumer esta disponible, recibira el mensaje
                         try{
                             client.sendMessage(msg);
                             success = true;
                             client.setAvailable(false);
+                            break;
                         }catch(IOException ex){
                             //Si falla por desconexion se elimina
                             consumersIds.remove(id);
