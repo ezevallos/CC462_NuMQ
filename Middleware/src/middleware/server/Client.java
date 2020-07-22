@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.Socket;
 
 /**
- *
+ * Cliente conectado via Socket TCP
  * @author Victor
  */
 public class Client implements Runnable{

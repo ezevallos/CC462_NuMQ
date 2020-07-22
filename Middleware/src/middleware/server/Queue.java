@@ -7,7 +7,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
 /**
- * Almacena los mensajes y envia a su consumidor si esta disponible
+ * Clase que almacena los mensajes y envia a su consumidor si esta disponible
  * @author Victor
  */
 public class Queue {
@@ -26,11 +26,20 @@ public class Queue {
         consumersIds = new HashSet<>();
     }
     
+    /**
+     * Cuando el cliente notifica que recibio el mensaje y termino su tarea
+     * @param idClient 
+     */
     public void consAck(Integer idClient){
         Client client = mMiddleware.getClients().get(idClient);
         client.setAvailable(true);
     }
     
+    /**
+     * Cuando el cliente indica que consumira de la cola
+     * Se agrega el id del cliente al conjunto de consumidores del queue
+     * @param idClient 
+     */
     public void consume(Integer idClient){
         consumersIds.add(idClient);
         Client client = mMiddleware.getClients().get(idClient);
@@ -42,12 +51,16 @@ public class Queue {
         }
     }
     
+    /**
+     * Hilo que maneja el consumo en un loop
+     * Distribuye los mensajes a los consumers disponibles
+     */
     private Runnable consRun = () -> {
         while(runningCons){
             String msg = mQueue.peek(); //obtiene el mensaje
             if(msg!=null){
                 boolean success = false;
-                Integer[] consIdArr = consumersIds.toArray(new Integer[consumersIds.size()]);
+                Set<Integer> consIdArr = new HashSet<>(consumersIds);
                 for(Integer id : consIdArr){
                     Client client = mMiddleware.getClients().get(id);
                     if(client.isAvailable()){   //Si el consumer esta disponible, recibira el mensaje
@@ -68,15 +81,14 @@ public class Queue {
         }
     };
     
-    //Adiere mensaje de la cola
+    /**
+     * Cuando un consumer o topic agrega un mensaje a la cola
+     * @param msg
+     * @throws InterruptedException 
+     */
     public void putMsg(String msg) throws InterruptedException{
         mQueue.put(msg);
     }
-    
-    //Extrea mensaje de la cola
-    /*public String pollMsg(){
-        return mQueue.poll();
-    }*/
     
     public Set<Integer> getConsumersIds(){
         return consumersIds;

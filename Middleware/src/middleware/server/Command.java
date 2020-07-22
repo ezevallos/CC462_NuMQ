@@ -1,15 +1,21 @@
 package middleware.server;
 
 /**
- *
+ * Comandos que se reciben en la comunicacion Cliente-Middleware
+ * CMD_DEC_TOPIC: "1,topic_name"
+ * CMD_DEC_QUEUE: "2,queue_name"
+ * CMD_SUBS_QUEUE: "3,topic_name,queue_name"
+ * CMD_PROD_SEND: "4,topic_name,queue_name,body"
+ * CMD_CONSUME: "5,queue_name"
+ * CMD_CONS_ACK: "6,queue_name"
  * @author Victor
  */
 public class Command {
     //TODO: ver si es necesario usar mas campos a parte del contenido de mensaje
     public static final int CMD_DEC_TOPIC = 1;
     public static final int CMD_DEC_QUEUE = 2;
-    public static final int CMD_BIND_QUEUE = 3;
-    public static final int CMD_SEND = 4;
+    public static final int CMD_SUBS_QUEUE = 3;
+    public static final int CMD_PROD_SEND = 4;
     public static final int CMD_CONSUME = 5;
     public static final int CMD_CONS_ACK = 6;
     
@@ -30,11 +36,11 @@ public class Command {
             case CMD_DEC_QUEUE:
                 cmmd = parseDecQueue(msg);
                 break;
-            case CMD_BIND_QUEUE:
+            case CMD_SUBS_QUEUE:
                 cmmd = parseBindQueue(msg);
                 break;
-            case CMD_SEND:
-                cmmd = parseSend(msg);
+            case CMD_PROD_SEND:
+                cmmd = parseProdSend(msg);
                 break;    
             case CMD_CONSUME:
                 cmmd = parseConsume(msg);
@@ -48,6 +54,12 @@ public class Command {
         return cmmd;
     }
     
+    /**
+     * Interpreta un comando Declaracion de Topico
+     * Formato: "1,topic_name"
+     * @param msg
+     * @return 
+     */
     private static Command parseDecTopic(String msg){
         Command message = new Command();
         String[] tokens = msg.split(",");
@@ -56,6 +68,12 @@ public class Command {
         return message;
     }
     
+    /**
+     * Interpreta un comando Declaracion de Queue
+     * Formato: "2,queue_name"
+     * @param msg
+     * @return 
+     */
     private static Command parseDecQueue(String msg){
         Command message = new Command();
         String[] tokens = msg.split(",");
@@ -64,19 +82,31 @@ public class Command {
         return message;
     }
     
+    /**
+     * Interpreta un comando subscribcion de queue
+     * Formato: "3,topic_name,queue_name"
+     * @param msg
+     * @return 
+     */
     private static Command parseBindQueue(String msg){
         Command message = new Command();
         String[] tokens = msg.split(",");
-        message.setCmd(CMD_BIND_QUEUE);
+        message.setCmd(CMD_SUBS_QUEUE);
         message.setTopicName(tokens[1]);
         message.setQueueName(tokens[2]);
         return message;
     }
     
-    private static Command parseSend(String msg){
+    /**
+     * Interpreta un comando envio de mensaje desde producer
+     * Formato: "4,topic_name,queue_name,body"
+     * @param msg
+     * @return 
+     */
+    private static Command parseProdSend(String msg){
         Command message = new Command();
         String[] tokens = msg.split(",");
-        message.setCmd(CMD_SEND);
+        message.setCmd(CMD_PROD_SEND);
         if("".equals(tokens[1]))
             message.setTopicName(null);
         else
@@ -89,6 +119,12 @@ public class Command {
         return message;
     }
     
+    /**
+     * Interpreta un comando de consumo de mensajes de una queue
+     * Formato: "5,queue_name"
+     * @param msg
+     * @return 
+     */
     private static Command parseConsume(String msg){
         Command message = new Command();
         String[] tokens = msg.split(",");
@@ -97,6 +133,13 @@ public class Command {
         return message;
     }
     
+    /**
+     * Interpreta un comando de ACK de consumo
+     * Indica que el cliente esta disponible para el siguiente mensaje
+     * Formato: "6,queue_name"
+     * @param msg
+     * @return 
+     */
     private static Command parseConsAck(String msg){
         Command message = new Command();
         String[] tokens = msg.split(",");

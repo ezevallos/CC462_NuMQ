@@ -5,14 +5,14 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 /**
- *
+ *  Conexion mediante ServerSocket
  * @author Victor
  */
 public class Connection implements Runnable{
     private final int mPort;
     private ServerSocket mServerSocket;
     private boolean running = true;
-    private NewConnCallBack mCallBack;
+    private NewConnListener mCallBack;
     
     public Connection(int port){
         mPort = port;
@@ -23,7 +23,7 @@ public class Connection implements Runnable{
         System.out.println("Servidor creado en puerto: "+mPort);
     }
     
-    public void listen(NewConnCallBack callBack){
+    public void listen(NewConnListener callBack){
         mCallBack = callBack;
         Thread thread = new Thread(this);
         thread.start();
@@ -46,7 +46,7 @@ public class Connection implements Runnable{
         }
     }
     
-    public interface NewConnCallBack{
+    public interface NewConnListener{
         void newConnection(Socket socket);
     }
     
