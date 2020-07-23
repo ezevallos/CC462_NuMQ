@@ -34,7 +34,7 @@ public class ProducerEjm3 {
             for(int i=0;i<10;i++){
                 String msg = "Registro nro "+(i+1);
                 try {
-                    channel.producerSend(topicName, null, msg);
+                    channel.producerSend(topicName, null, null,msg);
                     System.out.println("Enviado a topic: "+topicName+", Mensaje: "+msg);
                 } catch (Exception ex) {
                     System.err.println(ex);

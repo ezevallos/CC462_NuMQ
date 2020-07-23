@@ -3,6 +3,7 @@ package consumer;
 import java.io.IOException;
 import numq.libs.Channel;
 import numq.libs.Connection;
+import numq.libs.Message;
 
 /**
  * Consumidor o worker, recibira una tarea a la vez, notifica cuando termina
@@ -29,9 +30,9 @@ public class ConsumerEjm2 {
             
             System.out.println("Consumiendo desde Queue: "+queueName);
             //Consume desde la queue, autoacknowledge activado
-            channel.consume(queueName, true, (String body) -> {
+            channel.consume(queueName, true, (Message message) -> {
                 System.out.println("Tarea recibida de queue: "+queueName);
-                trabajar(body);
+                trabajar(message.getBody());
             });
         } catch (IOException ex) {
             System.err.println(ex.getMessage());

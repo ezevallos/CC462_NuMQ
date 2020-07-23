@@ -3,6 +3,7 @@ package consumer;
 import java.io.IOException;
 import numq.libs.Channel;
 import numq.libs.Connection;
+import numq.libs.Message;
 
 /**
  * Consumer subscribe su propia queue a un topico
@@ -35,8 +36,8 @@ public class ConsumerEjm3 {
             
             System.out.println("Consumiendo desde Queue: "+queueName);
             //Consume desde la queue, autoacknowledge activado
-            channel.consume(queueName, true, (String body) -> {
-                System.out.println(topicName+":"+queueName+" > "+body);
+            channel.consume(queueName, true, (Message message) -> {
+                System.out.println(topicName+":"+queueName+" > "+message.getBody());
             });
         } catch (IOException ex) {
             System.err.println(ex.getMessage());

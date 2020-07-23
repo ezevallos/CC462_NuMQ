@@ -16,6 +16,7 @@ public class Channel {
     private final DataOutputStream out;
     private String topicName;
     private String queueName;
+    private Consume consumeThread;
     
     public Channel(Socket mSocket) throws IOException{
         in = new DataInputStream(mSocket.getInputStream());
@@ -83,22 +84,29 @@ public class Channel {
      * Producer envia mensaje a un topic o queue
      * @param topicName
      * @param queueName
+     * @param replyQueue
      * @param body
      * @throws Exception 
      */
-    public void producerSend(String topicName,String queueName,String body) throws Exception{
+    public void producerSend(String topicName,String queueName,String replyQueue,String body) throws Exception{
         if(body==null || body.isEmpty())
             throw new Exception("Body no debe ser vacio o nulo");
         
         Command msg;
+        String mTopic = "",mQueue = "", mReplyQ = "";
         
         if(topicName==null || topicName.isEmpty()){
             if(queueName==null || queueName.isEmpty())
                 throw new Exception("Debe especificar el queue");
-            msg = Command.createSendMsg("", queueName, body);
+            //msg = Command.createSendMsg("", queueName, body);
+            mQueue = queueName;
         }else{
-            msg = Command.createSendMsg(topicName, "", body);
+            //msg = Command.createSendMsg(topicName, "", body);
+            mTopic = topicName;
         }
+        if(replyQueue != null && !replyQueue.isEmpty())
+            mReplyQ = replyQueue;
+        msg = Command.createSendMsg(mTopic, mQueue, mReplyQ, body);
         sendCommand(msg);
         //System.out.println("Enviado a "+topicName+":"+queueName+", Mensaje: "+body);
     }
@@ -110,8 +118,16 @@ public class Channel {
      * @param callBack 
      */
     public void consume(String queueName,boolean autoAck,CallBack callBack){
-        Consume mConsume = new Consume(queueName, autoAck, callBack);
-        mConsume.start();
+        consumeThread = new Consume(queueName, autoAck, callBack);
+        consumeThread.start();
+    }
+    
+    public void consAck(String queueName) throws IOException{
+        sendConsAck(queueName);
+    }
+    
+    public void cancelConsume(){
+        consumeThread.stopConsume();
     }
     
     /**
@@ -119,7 +135,7 @@ public class Channel {
      * @param queueName
      * @throws IOException 
      */
-    public void sendConsAck(String queueName) throws IOException{
+    private void sendConsAck(String queueName) throws IOException{
         Command msg = Command.createConsAckMsg(queueName);
         sendCommand(msg);
     }
@@ -129,7 +145,7 @@ public class Channel {
      * @param queueName
      * @throws IOException 
      */
-    public void sendConsume(String queueName) throws IOException{
+    private void sendConsume(String queueName) throws IOException{
         Command msg = Command.createConsumeMsg(queueName);
         sendCommand(msg);
     }
@@ -178,7 +194,7 @@ public class Channel {
                 sendConsume(queueName); //Avisa al servidor que inicia consumo
                 while(running){
                     String msg = in.readUTF();
-                    mCallBack.onResponse(msg);
+                    mCallBack.onResponse(Message.parseMessage(msg));
                     
                     if(autoAck){
                         sendConsAck(queueName); //Confirma que acabo su tarea y esta disponible
@@ -196,6 +212,6 @@ public class Channel {
     }
     
     public interface CallBack{
-        void onResponse(String body);
+        void onResponse(Message message);
     }
 }

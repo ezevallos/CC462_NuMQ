@@ -5,7 +5,7 @@ package middleware.server;
  * CMD_DEC_TOPIC: "1,topic_name"
  * CMD_DEC_QUEUE: "2,queue_name"
  * CMD_SUBS_QUEUE: "3,topic_name,queue_name"
- * CMD_PROD_SEND: "4,topic_name,queue_name,body"
+ * CMD_PROD_SEND: "4,topic_name,queue_name,reply_queue,body"
  * CMD_CONSUME: "5,queue_name"
  * CMD_CONS_ACK: "6,queue_name"
  * @author Victor
@@ -22,7 +22,7 @@ public class Command {
     private int cmd;
     private String topicName;
     private String queueName;
-    private String body;
+    private Message message;
     
     private Command(){}
     
@@ -61,11 +61,11 @@ public class Command {
      * @return 
      */
     private static Command parseDecTopic(String msg){
-        Command message = new Command();
+        Command cmd = new Command();
         String[] tokens = msg.split(",");
-        message.setCmd(CMD_DEC_TOPIC);
-        message.setTopicName(tokens[1]);
-        return message;
+        cmd.setCmd(CMD_DEC_TOPIC);
+        cmd.setTopicName(tokens[1]);
+        return cmd;
     }
     
     /**
@@ -75,11 +75,11 @@ public class Command {
      * @return 
      */
     private static Command parseDecQueue(String msg){
-        Command message = new Command();
+        Command cmd = new Command();
         String[] tokens = msg.split(",");
-        message.setCmd(CMD_DEC_QUEUE);
-        message.setQueueName(tokens[1]);
-        return message;
+        cmd.setCmd(CMD_DEC_QUEUE);
+        cmd.setQueueName(tokens[1]);
+        return cmd;
     }
     
     /**
@@ -89,12 +89,12 @@ public class Command {
      * @return 
      */
     private static Command parseBindQueue(String msg){
-        Command message = new Command();
+        Command cmd = new Command();
         String[] tokens = msg.split(",");
-        message.setCmd(CMD_SUBS_QUEUE);
-        message.setTopicName(tokens[1]);
-        message.setQueueName(tokens[2]);
-        return message;
+        cmd.setCmd(CMD_SUBS_QUEUE);
+        cmd.setTopicName(tokens[1]);
+        cmd.setQueueName(tokens[2]);
+        return cmd;
     }
     
     /**
@@ -104,19 +104,24 @@ public class Command {
      * @return 
      */
     private static Command parseProdSend(String msg){
-        Command message = new Command();
+        Command cmd = new Command();
+        Message message = null;
         String[] tokens = msg.split(",");
-        message.setCmd(CMD_PROD_SEND);
+        cmd.setCmd(CMD_PROD_SEND);
         if("".equals(tokens[1]))
-            message.setTopicName(null);
+            cmd.setTopicName(null);
         else
-            message.setTopicName(tokens[1]);
+            cmd.setTopicName(tokens[1]);
         if("".equals(tokens[2]))
-            message.setQueueName(null);
+            cmd.setQueueName(null);
         else
-            message.setQueueName(tokens[2]);
-        message.setBody(tokens[3]);
-        return message;
+            cmd.setQueueName(tokens[2]);
+        if("".equals(tokens[3]))
+            message = Message.createMessage(null, tokens[4]);
+        else
+            message = Message.createMessage(tokens[3], tokens[4]);
+        cmd.setMessage(message);
+        return cmd;
     }
     
     /**
@@ -126,11 +131,11 @@ public class Command {
      * @return 
      */
     private static Command parseConsume(String msg){
-        Command message = new Command();
+        Command cmd = new Command();
         String[] tokens = msg.split(",");
-        message.setCmd(CMD_CONSUME);
-        message.setQueueName(tokens[1]);
-        return message;
+        cmd.setCmd(CMD_CONSUME);
+        cmd.setQueueName(tokens[1]);
+        return cmd;
     }
     
     /**
@@ -141,11 +146,11 @@ public class Command {
      * @return 
      */
     private static Command parseConsAck(String msg){
-        Command message = new Command();
+        Command cmd = new Command();
         String[] tokens = msg.split(",");
-        message.setCmd(CMD_CONS_ACK);
-        message.setQueueName(tokens[1]);
-        return message;
+        cmd.setCmd(CMD_CONS_ACK);
+        cmd.setQueueName(tokens[1]);
+        return cmd;
     }
 
     public int getCmd() {
@@ -172,12 +177,12 @@ public class Command {
         this.queueName = queueName;
     }
 
-    public String getBody() {
-        return body;
+    public Message getMessage() {
+        return message;
     }
 
-    private void setBody(String body) {
-        this.body = body;
+    private void setMessage(Message message) {
+        this.message = message;
     }
     
     

@@ -27,8 +27,8 @@ public class Client implements Runnable{
         available = false;
     }
     
-    public void sendMessage(String msg) throws IOException{
-        out.writeUTF(msg);
+    public void sendMessage(Message msg) throws IOException{
+        out.writeUTF(msg.toString());
     }
 
     public void listen(ClientListener listener){

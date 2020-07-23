@@ -33,7 +33,7 @@ public class ProducerEjm1 {
             //Envia mensajes
             for(int i=0;i<10;i++){
                 try {
-                    channel.producerSend(null, queueName, body);
+                    channel.producerSend(null, queueName, null,body);
                     System.out.println("Enviado a queue: "+queueName+", Mensaje: "+body);
                 } catch (Exception ex) {
                     System.err.println(ex);

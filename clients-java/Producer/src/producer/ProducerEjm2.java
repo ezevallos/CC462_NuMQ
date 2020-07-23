@@ -36,7 +36,7 @@ public class ProducerEjm2 {
             for(int i=0;i<cantTareas;i++){
                 int numTarea = (int) (Math.random() * tareas.length);
                 try {
-                    channel.producerSend(null, queueName, tareas[numTarea]);
+                    channel.producerSend(null, queueName, null, tareas[numTarea]);
                     System.out.println("Enviado a queue: "+queueName+", tarea: "+tareas[numTarea]);
                 } catch (Exception ex) {
                     System.err.println(ex);

@@ -12,7 +12,7 @@ import java.util.concurrent.LinkedBlockingDeque;
  */
 public class Queue {
     public static final int MAX_SIZE = 100; 
-    private BlockingQueue<String> mQueue; //Tipo String por mientras
+    private BlockingQueue<Message> mQueue; //Tipo String por mientras
     private Set<Integer> consumersIds;
     private final String mName;
     private Middleware mMiddleware;
@@ -57,7 +57,7 @@ public class Queue {
      */
     private Runnable consRun = () -> {
         while(runningCons){
-            String msg = mQueue.peek(); //obtiene el mensaje
+            Message msg = mQueue.peek(); //obtiene el mensaje
             if(msg!=null){
                 boolean success = false;
                 Set<Integer> consIdArr = new HashSet<>(consumersIds);
@@ -86,7 +86,7 @@ public class Queue {
      * @param msg
      * @throws InterruptedException 
      */
-    public void putMsg(String msg) throws InterruptedException{
+    public void putMsg(Message msg) throws InterruptedException{
         mQueue.put(msg);
     }
     

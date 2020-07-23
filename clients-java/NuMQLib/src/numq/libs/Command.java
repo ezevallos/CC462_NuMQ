@@ -8,7 +8,7 @@ import java.util.List;
  * CMD_DEC_TOPIC: "1,topic_name"
  * CMD_DEC_QUEUE: "2,queue_name"
  * CMD_SUBS_QUEUE: "3,topic_name,queue_name"
- * CMD_PROD_SEND: "4,topic_name,queue_name,body"
+ * CMD_PROD_SEND: "4,topic_name,queue_name,reply_queue,body"
  * CMD_CONSUME: "5,queue_name"
  * CMD_CONS_ACK: "6,queue_name"
  * @author Victor
@@ -26,48 +26,49 @@ public class Command {
     private Command(){}
     
     protected static Command createDecTopicMsg(String topicName){
-        Command msg = new Command();
-        msg.setCommandNum(CMD_DEC_TOPIC);
-        msg.addValue(topicName);
-        return msg;
+        Command cmd = new Command();
+        cmd.setCommandNum(CMD_DEC_TOPIC);
+        cmd.addValue(topicName);
+        return cmd;
     }
     
     protected static Command createDecQueueMsg(String queueName){
-        Command msg = new Command();
-        msg.setCommandNum(CMD_DEC_QUEUE);
-        msg.addValue(queueName);
-        return msg;
+        Command cmd = new Command();
+        cmd.setCommandNum(CMD_DEC_QUEUE);
+        cmd.addValue(queueName);
+        return cmd;
     }
     
     protected static Command createBindQueueMsg(String topicName,String queueName){
-        Command msg = new Command();
-        msg.setCommandNum(CMD_SUBS_QUEUE);
-        msg.addValue(topicName);
-        msg.addValue(queueName);
-        return msg;
+        Command cmd = new Command();
+        cmd.setCommandNum(CMD_SUBS_QUEUE);
+        cmd.addValue(topicName);
+        cmd.addValue(queueName);
+        return cmd;
     }
     
-    protected static Command createSendMsg(String topicName,String queueName, String body){
-        Command msg = new Command();
-        msg.setCommandNum(CMD_PROD_SEND);
-        msg.addValue(topicName);
-        msg.addValue(queueName);
-        msg.addValue(body);
-        return msg;
+    protected static Command createSendMsg(String topicName,String queueName,String replyQueue,String body){
+        Command cmd = new Command();
+        cmd.setCommandNum(CMD_PROD_SEND);
+        cmd.addValue(topicName);
+        cmd.addValue(queueName);
+        cmd.addValue(replyQueue);
+        cmd.addValue(body);
+        return cmd;
     }
     
     protected static Command createConsumeMsg(String queueName){
-        Command msg = new Command();
-        msg.setCommandNum(CMD_CONSUME);
-        msg.addValue(queueName);
-        return msg;
+        Command cmd = new Command();
+        cmd.setCommandNum(CMD_CONSUME);
+        cmd.addValue(queueName);
+        return cmd;
     }
     
     protected static Command createConsAckMsg(String queueName){
-        Command msg = new Command();
-        msg.setCommandNum(CMD_CONS_ACK);
-        msg.addValue(queueName);
-        return msg;
+        Command cmd = new Command();
+        cmd.setCommandNum(CMD_CONS_ACK);
+        cmd.addValue(queueName);
+        return cmd;
     }
 
     private void setCommandNum(int commandNum) {

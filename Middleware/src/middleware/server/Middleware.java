@@ -83,7 +83,7 @@ public class Middleware{
                 subscribeQueue(idClient,cmmd.getTopicName(),cmmd.getQueueName());
                 break;
             case Command.CMD_PROD_SEND:
-                producerSend(idClient,cmmd.getTopicName(),cmmd.getQueueName(),cmmd.getBody());
+                producerSend(idClient,cmmd.getTopicName(),cmmd.getQueueName(),cmmd.getMessage());
                 break;
             case Command.CMD_CONSUME:
                 consume(idClient,cmmd.getQueueName());
@@ -155,12 +155,12 @@ public class Middleware{
      * @param queueName
      * @param body 
      */
-    private void producerSend(Integer idClient, String topicName, String queueName, String body) {
+    private void producerSend(Integer idClient, String topicName, String queueName, Message message) {
         //System.out.println("Cliente"+idClient+" envia mensaje a "+topicName+":"+queueName);
         if(topicName!=null){
-            sendToTopic(idClient, topicName, body);
+            sendToTopic(idClient, topicName, message);
         }else if(queueName!=null){
-            sendToQueue(idClient, queueName, body);
+            sendToQueue(idClient, queueName, message);
         }
     }
     
@@ -170,13 +170,13 @@ public class Middleware{
      * @param topicName
      * @param body 
      */
-    private void sendToTopic(Integer idCliente,String topicName,String body){
+    private void sendToTopic(Integer idCliente,String topicName,Message message){
         Topic topic = mTopics.get(topicName);
         if(topic==null){
             System.err.println("No se declaro el topic: "+topicName+", declare antes de enviar mensaje");
             return;
         }
-        topic.send(body);
+        topic.send(message);
         System.out.println("Cliente"+idCliente+" envia mensaje a topico: "+topicName);
     }
     
@@ -186,14 +186,14 @@ public class Middleware{
      * @param queueName
      * @param body 
      */
-    private void sendToQueue(Integer idCliente,String queueName,String body){
+    private void sendToQueue(Integer idCliente,String queueName,Message message){
         Queue queue = mQueues.get(queueName);
         if(queue==null){
             System.err.println("No se declaro el queue: "+queueName+", declare antes de enviar mensaje");
             return;
         }
         try {
-            queue.putMsg(body);
+            queue.putMsg(message);
             System.out.println("Cliente"+idCliente+" envia mensaje a Queue:"+queueName);
         } catch (InterruptedException ex) {
             System.err.println(ex.getMessage());

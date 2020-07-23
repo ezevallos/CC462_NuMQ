@@ -3,6 +3,7 @@ package consumer;
 import java.io.IOException;
 import numq.libs.Channel;
 import numq.libs.Connection;
+import numq.libs.Message;
 
 /**
  *
@@ -29,8 +30,8 @@ public class ConsumerEjm1 {
             
             System.out.println("Consumiendo desde Queue: "+queueName);
             //Consume desde la queue, autoacknowledge activado
-            channel.consume(queueName, true, (String body) -> {
-                System.out.println(queueName+" > "+body);
+            channel.consume(queueName, true, (Message message) -> {
+                System.out.println(queueName+" > "+message.getBody());
             });
         } catch (IOException ex) {
             System.err.println(ex.getMessage());

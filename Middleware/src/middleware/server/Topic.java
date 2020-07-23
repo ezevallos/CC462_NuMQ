@@ -33,7 +33,7 @@ public class Topic {
      * Envia el mensaje a los queues suscritos
      * @param msg 
      */
-    public void send(String msg){
+    public void send(Message msg){
         Set<String> subs = new HashSet<>(subsQeueus);
         for(String subId : subs){   //Itera todos los queues suscritos
             Queue queue = mMiddleware.getQueues().get(subId);
