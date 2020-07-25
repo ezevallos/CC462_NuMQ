@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import numq.libs.Channel;
 import numq.libs.Connection;
 import numq.libs.Message;
@@ -22,27 +20,31 @@ public class ProducerEjm4 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
+        Scanner scanner = new Scanner(System.in);
         String hostAddr = "localhost";
         int numPort = 5555;
         try {
             RPCClient rpcc = new RPCClient(hostAddr, numPort);
-            for(int i=0;i<10;i++){
+            rpcc.receivResponse();
+            for(int i=1;i<11;i++){
                 String i_str = Integer.toString(i);
                 System.out.println("Solicito fib("+i_str+")");
-                String response = rpcc.call(i_str);
-                System.out.println("Respuesta: "+response);
+                rpcc.sendRequest(i_str);
             }
+            
         } catch (Exception ex) {
             System.err.println(ex.getMessage());
         }
-        
+        System.out.println("Presione ENTER para salir");
+        String end = scanner.nextLine();
     }
     
     public static class RPCClient{
         Connection connection;
         Channel channel;
         String queueName = "rpc_queue";
+        String replyQueue;
+        BlockingQueue<String> response;
         
         public RPCClient(String hostAddr,int numPort) throws IOException{
             //Conecta al middleware
@@ -53,25 +55,21 @@ public class ProducerEjm4 {
 
             //Declara queue de request
             channel.declareQueue(queueName);
+            replyQueue = channel.declareQueue();
+            response = new ArrayBlockingQueue<>(1);
         }
         
-        public String call(String msg) throws Exception{
-            //Declara queue de respuesta
-            String replyQueue = channel.declareQueue();
-                
+        public void sendRequest(String msg) throws Exception{
             //Envia request
             channel.producerSend(null, queueName, replyQueue, msg);
-               
-            final BlockingQueue<String> response = new ArrayBlockingQueue<>(1);
-                
+            String resp = response.take();
+            System.out.println("Respuesta: "+resp);
+        }
+        
+        public void receivResponse(){
             channel.consume(replyQueue, true, (Message message) -> {
                 response.offer(message.getBody());
             });
-                
-            String result = response.take();
-            channel.cancelConsume();
-                
-            return result;
         }
     } 
 }

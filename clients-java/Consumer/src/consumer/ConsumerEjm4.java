@@ -37,6 +37,7 @@ public class ConsumerEjm4 {
                     
                     channel.producerSend(null, message.getReplyQueue(), null, response);
                     channel.consAck(queueName);
+                    System.out.println("Resp: "+response+" > "+message.getReplyQueue());
                 } catch (Exception ex) {
                     System.err.println(ex.getMessage());
                 }
