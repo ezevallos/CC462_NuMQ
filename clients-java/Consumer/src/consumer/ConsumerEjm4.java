@@ -1,10 +1,8 @@
 package consumer;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Scanner;
 import numq.libs.Channel;
-import numq.libs.Channel.CallBack;
 import numq.libs.Connection;
 import numq.libs.Message;
 
@@ -17,12 +15,17 @@ public class ConsumerEjm4 {
     
     
     public static void main(String[] args){
-        String serverAddr = "localhost";
-        int numPort = 5555;
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Ingrese la direccion del middleware:");
+        String hostAddr = sc.nextLine();
+        
+        System.out.println("Ingrese el número de puerto del middleware:");
+        int numPort = Integer.parseInt(sc.nextLine());
+        
         String queueName = "rpc_queue";
         
         try {
-            Connection connection = new Connection(serverAddr, numPort);
+            Connection connection = new Connection(hostAddr, numPort);
             Channel channel = connection.getChannel();
             
             channel.declareQueue(queueName);

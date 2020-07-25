@@ -1,6 +1,7 @@
 package consumer;
 
 import java.io.IOException;
+import java.util.Scanner;
 import numq.libs.Channel;
 import numq.libs.Connection;
 import numq.libs.Message;
@@ -15,8 +16,13 @@ public class ConsumerEjm2 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        String hostAddr = "localhost";
-        int numPort = 5555;
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Ingrese la direccion del middleware:");
+        String hostAddr = sc.nextLine();
+        
+        System.out.println("Ingrese el número de puerto del middleware:");
+        int numPort = Integer.parseInt(sc.nextLine());
+        
         String queueName = "work_queue";
         try {
              //Conecta al middleware

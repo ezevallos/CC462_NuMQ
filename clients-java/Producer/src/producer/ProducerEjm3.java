@@ -17,8 +17,13 @@ public class ProducerEjm3 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        String hostAddr = "localhost";
-        int numPort = 5555;
+        Scanner sc = new Scanner(System.in);
+        System.out.println("Ingrese la direccion del middleware:");
+        String hostAddr = sc.nextLine();
+        
+        System.out.println("Ingrese el número de puerto del middleware:");
+        int numPort = Integer.parseInt(sc.nextLine());
+        
         String topicName = "logs";
         try {
             //Conecta al middleware
@@ -45,7 +50,6 @@ public class ProducerEjm3 {
             System.err.println(ex);
         }
         
-        Scanner sc = new Scanner(System.in);
         System.out.println("Pesione ENTER para acabar");
         String end = sc.nextLine(); //Enter para terminar
     }
