@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import org.java_websocket.WebSocket;
 
 /**
  * Clase principal que gestiona los comandos y mensajes
@@ -11,10 +12,12 @@ import java.util.Map;
  * @author Victor
  */
 public class Middleware{
-    public static final int NUM_PORT = 5555;
+    public static final int SOCKET_NUM_PORT = 5555;
+    public static final int WS_NUM_PORT = 4444;
     private Map<String,Queue> mQueues;
     private Map<String,Topic> mTopics;
-    private Connection mConn;
+    private ConnSocketServer mConn;
+    private ConnWebSocketServer mConnWS;
     private Map<Integer,Client> mClients;
     private Integer count;
     
@@ -22,7 +25,8 @@ public class Middleware{
         mQueues = new HashMap<>();
         mTopics = new HashMap<>();
         mClients = new HashMap<>();
-        mConn = new Connection(NUM_PORT);
+        mConn = new ConnSocketServer(SOCKET_NUM_PORT);
+        mConnWS = new ConnWebSocketServer(WS_NUM_PORT, wsListener);
         count = 0;
     }
 
@@ -30,6 +34,7 @@ public class Middleware{
         try {
             mConn.create();
             mConn.listen(connListener);
+            mConnWS.start();
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
         }
@@ -47,9 +52,9 @@ public class Middleware{
      * Listener que gestiona nueva conexion de cliente
      * Registra el nuevo cliente a la lista
      */
-    private final Connection.NewConnListener connListener = (Socket socket) -> {
+    private final ConnSocketServer.NewConnListener connListener = (Socket socket) -> {
         try{
-            Client client = new Client(++count, socket);
+            Client client = new ClientSocket(++count, socket);
             mClients.put(client.getId(), client);
             client.listen(this.clientListener);
             System.out.println("Nuevo cliente"+client.getId());
@@ -59,10 +64,53 @@ public class Middleware{
     };
     
     /**
-     * Listener que gestiona los comandos que envian los clientes
+     * Listener para el websocketServer
      */
-    private final Client.ClientListener clientListener = (Integer idClient,String msg) -> {
-        ejecutarComando(idClient,msg);
+    private final ConnWebSocketServer.WSListener wsListener = new ConnWebSocketServer.WSListener() {
+        @Override
+        public void onNewConnWS(WebSocket ws) {
+            Client client = new ClienteWS(++count, ws);
+            mClients.put(client.getId(), client);
+            System.out.println("Nuevo cliente"+client.getId());
+        }
+
+        @Override
+        public void onMessage(WebSocket ws, String msg) {
+            Integer idClient = buscarClient(ws);
+            if(idClient!=null)
+                ejecutarComando(idClient, msg);
+        }
+
+        @Override
+        public void removeWS(WebSocket ws) {
+            Integer idClient = buscarClient(ws);
+            if(idClient!=null){
+                Client client = mClients.get(idClient);
+                Queue queue = mQueues.get(client.getQueueName());
+                if(queue!=null)
+                    queue.delConsumer(idClient);
+                mClients.remove(idClient);
+            }
+        }
+    };
+    
+    /**
+     * Listener que gestiona los comandos que envian los clientes de Socket
+     */
+    private final Client.MessageListener clientListener = new Client.MessageListener() {
+        @Override
+        public void onMessage(Integer idClient, String msg) {
+            ejecutarComando(idClient, msg);
+        }
+
+        @Override
+        public void remove(Integer idClient) {
+            Client client = mClients.get(idClient);
+            Queue queue = mQueues.get(client.getQueueName());
+            if(queue!=null)
+                queue.delConsumer(idClient);
+            mClients.remove(idClient);
+        }
     };
     
     /**
@@ -229,6 +277,19 @@ public class Middleware{
         queue.consAck(idClient);
     }
 
-    
+    private Integer buscarClient(WebSocket ws){
+        Integer idClient = null;
+        Map<Integer,Client> clients = new HashMap<>(mClients);
+        for(Integer id : clients.keySet()){
+            Client client = clients.get(id);
+            if(client.getmTipo()==Client.WS){
+                if(((ClienteWS)client).getWS()==ws){
+                    idClient = id;
+                    break;
+                }    
+            }
+        }
+        return idClient;
+    }
     
 }

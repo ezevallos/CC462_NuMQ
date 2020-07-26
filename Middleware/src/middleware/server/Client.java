@@ -1,77 +1,65 @@
 package middleware.server;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.Socket;
-
 /**
  * Cliente conectado via Socket TCP
  * @author Victor
  */
-public class Client implements Runnable{
-    private final Integer mId;
-    private final Socket mSocket;
-    private final DataInputStream in;
-    private final DataOutputStream out;
-    private boolean running = true;
-    private ClientListener mListener;
+public abstract class Client{
+    private Integer mId;
+    private MessageListener mListener;
     private boolean available;  //Para consumo
+    public static final int SOCKET = 1;
+    public static final int WS = 2;
+    private final int mTipo;
+    private String queueName;
     
-    public Client(Integer id, Socket socket) throws IOException{
+    public Client(Integer id,int tipo){
         mId = id;
-        mSocket = socket;
-        in = new DataInputStream(mSocket.getInputStream());
-        out = new DataOutputStream(mSocket.getOutputStream());
-        //in.read
+        mTipo = tipo;
         available = false;
     }
-    
-    public void sendMessage(Message msg) throws IOException{
-        out.writeUTF(msg.toString());
-    }
 
-    public void listen(ClientListener listener){
-        mListener = listener;
-        Thread thread = new Thread(this);
-        thread.start();
-        System.out.println("Escuchando a Cliente"+mId);
+    public int getmTipo() {
+        return mTipo;
     }
     
-    @Override
-    public void run() {
-        while(running){
-            String msg;
-            try {
-                msg = in.readUTF();
-                //System.out.println("comando: "+msg);
-                mListener.messageRcvd(mId,msg);
-            } catch (IOException ex) {
-                System.err.println("Cliente"+mId+" desconectado, razon: "+ex.getMessage());
-                stopListen();
-            }/*finally{
-                stopListen();
-            }*/
-        }
-    }
+    public abstract void sendMessage(Message msg);
+
+    public abstract void listen(MessageListener listener);
     
-    public void stopListen(){
-        running = false;
-    }
-    
-    public Integer getId(){
+    public final Integer getId(){
         return mId;
     }
     
-    public interface ClientListener{
-        void messageRcvd(Integer idClient,String msg);
-    }
-    
-    public void setAvailable(boolean available){
+    public final void setAvailable(boolean available){
         this.available = available;
     }
     
-    public boolean isAvailable(){
+    public final boolean isAvailable(){
         return available;
     }
+
+    public MessageListener getmListener() {
+        return mListener;
+    }
+
+    public void setmListener(MessageListener mListener) {
+        this.mListener = mListener;
+    }
+    
+    public interface MessageListener{
+        void onMessage(Integer idClient,String msg);
+        void remove(Integer idClient);
+    }
+
+    public final String getQueueName() {
+        return queueName;
+    }
+
+    public final void setQueueName(String queueName) {
+        this.queueName = queueName;
+    }
+    
+    
 }

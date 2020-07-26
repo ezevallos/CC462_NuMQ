@@ -44,9 +44,11 @@ public class Queue {
         consumersIds.add(idClient);
         Client client = mMiddleware.getClients().get(idClient);
         client.setAvailable(true);  //habilita al consumidor
+        client.setQueueName(mName);
         
-        if(consThr==null){
+        if(consThr==null || !consThr.isAlive()){
             consThr = new Thread(consRun);
+            runningCons = true;
             consThr.start();
         }
     }
@@ -63,17 +65,12 @@ public class Queue {
                 Set<Integer> consIdArr = new HashSet<>(consumersIds);
                 for(Integer id : consIdArr){
                     Client client = mMiddleware.getClients().get(id);
-                    if(client.isAvailable()){   //Si el consumer esta disponible, recibira el mensaje
-                        try{
+                        if(client.isAvailable()){   //Si el consumer esta disponible, recibira el mensaje
+                            client.setAvailable(false);
                             client.sendMessage(msg);
                             success = true;
-                            client.setAvailable(false);
                             break;
-                        }catch(IOException ex){
-                            //Si falla por desconexion se elimina
-                            consumersIds.remove(id);
                         }
-                    }
                 }
                 if(success)
                     mQueue.poll();  //Retira el mensaje que se envio exitosamente
@@ -100,6 +97,9 @@ public class Queue {
     
     public void delConsumer(Integer id){
         consumersIds.remove(id);
+        if(consumersIds.isEmpty())
+            runningCons = false;
+        System.out.println("Cliente"+id+" eliminado de Queue: "+mName);
     }
     
     public String getName(){

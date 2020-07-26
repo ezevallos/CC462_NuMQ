@@ -8,13 +8,13 @@ import java.net.Socket;
  *  Conexion mediante ServerSocket
  * @author Victor
  */
-public class Connection implements Runnable{
+public class ConnSocketServer implements Runnable{
     private final int mPort;
     private ServerSocket mServerSocket;
     private boolean running = true;
     private NewConnListener mCallBack;
     
-    public Connection(int port){
+    public ConnSocketServer(int port){
         mPort = port;
     }
       
@@ -39,7 +39,7 @@ public class Connection implements Runnable{
         while(running){
             try {
                 Socket newCon = mServerSocket.accept();
-                mCallBack.newConnection(newCon);
+                mCallBack.onNewConnection(newCon);
             } catch (IOException ex) {
                 System.err.println(ex.getMessage());
             }
@@ -47,7 +47,7 @@ public class Connection implements Runnable{
     }
     
     public interface NewConnListener{
-        void newConnection(Socket socket);
+        void onNewConnection(Socket socket);
     }
     
 }
