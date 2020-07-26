@@ -25,6 +25,7 @@ public class Connection{
     private void connect() throws IOException{
         mSocket = new Socket(mHostAddr, mPortNum);
         mChannel = new Channel(mSocket);
+        System.out.println("Conectado a: "+mHostAddr+":"+mPortNum);
     }
     
     public Channel getChannel(){

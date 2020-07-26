@@ -20,6 +20,7 @@ public class ProducerEjm4 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        System.out.println("Producer - Ejmp 4: RPC-Queue");
         Scanner sc = new Scanner(System.in);
         System.out.println("Ingrese la direccion del middleware:");
         String hostAddr = sc.nextLine();

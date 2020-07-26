@@ -15,6 +15,7 @@ public class ConnWebSocketServer extends WebSocketServer{
     public ConnWebSocketServer(int numPort, WSListener listener){
         super(new InetSocketAddress(numPort));
         mListener = listener;
+        System.out.println("ServerWebSocket en puerto: "+numPort);
     }
 
     @Override

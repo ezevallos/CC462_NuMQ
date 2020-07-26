@@ -16,6 +16,7 @@ public class ConsumerEjm2 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        System.out.println("Consumidor - Ejmp 2: Work Queue");
         Scanner sc = new Scanner(System.in);
         System.out.println("Ingrese la direccion del middleware:");
         String hostAddr = sc.nextLine();

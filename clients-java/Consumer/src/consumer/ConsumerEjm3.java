@@ -16,6 +16,7 @@ public class ConsumerEjm3 {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        System.out.println("Consumidor - Ejmp 3: Publish/Subscriber");
         Scanner sc = new Scanner(System.in);
         System.out.println("Ingrese la direccion del middleware:");
         String hostAddr = sc.nextLine();
@@ -33,12 +34,15 @@ public class ConsumerEjm3 {
             
             //Declara el topic que usara
             channel.declareTopic(topicName);
+            System.out.println("Tópico a suscribir: "+topicName);
             
             //Autogenera una queue y la declara
             String queueName = channel.declareQueue();
+            System.out.println("Queue generada: "+queueName);
             
             //Subscribe la queue al topic
             channel.subscribeQueue(topicName, queueName);
+            System.out.println("Queue: "+queueName+ " suscrita a Topico: "+topicName);
             
             System.out.println("Consumiendo desde Queue: "+queueName);
             //Consume desde la queue, autoacknowledge activado

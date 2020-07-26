@@ -20,14 +20,14 @@ public class ConnSocketServer implements Runnable{
       
     public void create() throws IOException{
         mServerSocket = new ServerSocket(mPort);
-        System.out.println("Servidor creado en puerto: "+mPort);
+        System.out.println("ServerSocket en puerto: "+mPort);
     }
     
     public void listen(NewConnListener callBack){
         mCallBack = callBack;
         Thread thread = new Thread(this);
         thread.start();
-        System.out.println("Servidor escuchando...");
+        System.out.println("Inicia el servicio del ServerSocket");
     }
         
     public void stopListen(){
