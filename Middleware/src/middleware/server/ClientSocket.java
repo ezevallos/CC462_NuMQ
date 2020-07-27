@@ -4,8 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Cliente conectado via Socket TCP
@@ -29,7 +27,7 @@ public class ClientSocket extends Client implements Runnable{
         try {
             out.writeUTF(msg.toString());
         } catch (IOException ex) {
-            System.err.println("Cliente"+getId().toString()+" desconectado, razon: "+ex.getMessage());
+            //System.err.println("Cliente"+getId().toString()+" desconectado, razon: "+ex.getMessage());
             getmListener().remove(getId());
         }
     }

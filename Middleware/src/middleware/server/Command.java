@@ -28,7 +28,10 @@ public class Command {
     
     public static Command parseCommand(String msg){
         Command cmmd = null;
-        int cmd_num = Integer.parseInt(msg.substring(0, 1));
+        int cmd_num = 0;
+        try{
+            cmd_num = Integer.parseInt(msg.substring(0, 1));
+        }catch(NumberFormatException ex){}
         switch(cmd_num){
             case CMD_DEC_TOPIC:
                 cmmd = parseDecTopic(msg);

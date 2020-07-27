@@ -57,7 +57,8 @@ public class Middleware{
             Client client = new ClientSocket(++count, socket);
             mClients.put(client.getId(), client);
             client.listen(this.clientListener);
-            System.out.println("Nuevo cliente"+client.getId());
+            System.out.println("Nuevo cliente"+client.getId()+" desde "
+                    +socket.getRemoteSocketAddress().toString());
         }catch(IOException ex){
             System.err.println(ex.getMessage());
         }
@@ -69,14 +70,20 @@ public class Middleware{
     private final ConnWebSocketServer.WSListener wsListener = new ConnWebSocketServer.WSListener() {
         @Override
         public void onNewConnWS(WebSocket ws) {
+            //System.out.println("nuevo ws:"+ws.toString());
             Client client = new ClienteWS(++count, ws);
             mClients.put(client.getId(), client);
-            System.out.println("Nuevo cliente"+client.getId());
+            System.out.println("Nuevo cliente"+client.getId()+" desde "
+                    +ws.getRemoteSocketAddress().getAddress().toString()
+            +":"+ws.getRemoteSocketAddress().getPort());
         }
 
         @Override
         public void onMessage(WebSocket ws, String msg) {
+            //System.out.println("msg:"+msg+"; ws:"+ws.toString());
             Integer idClient = buscarClient(ws);
+            //int total = mClients.size();
+            //System.out.println("Id de cliente: "+idClient+", Clientes totales: "+total);
             if(idClient!=null)
                 ejecutarComando(idClient, msg);
         }
@@ -90,6 +97,7 @@ public class Middleware{
                 if(queue!=null)
                     queue.delConsumer(idClient);
                 mClients.remove(idClient);
+                System.out.println("Cliente"+idClient+" eliminado por desconexión");
             }
         }
     };
@@ -110,6 +118,7 @@ public class Middleware{
             if(queue!=null)
                 queue.delConsumer(idClient);
             mClients.remove(idClient);
+            System.out.println("Cliente"+idClient+" eliminado por desconexión");
         }
     };
     
@@ -120,26 +129,28 @@ public class Middleware{
      */
     private void ejecutarComando(Integer idClient,String msg){
         Command cmmd = Command.parseCommand(msg);
-        switch(cmmd.getCmd()){
-            case Command.CMD_DEC_TOPIC:
-                declareTopic(idClient, cmmd.getTopicName());
-                break;
-            case Command.CMD_DEC_QUEUE:
-                declareQueue(idClient,cmmd.getQueueName());
-                break;
-            case Command.CMD_SUBS_QUEUE:
-                subscribeQueue(idClient,cmmd.getTopicName(),cmmd.getQueueName());
-                break;
-            case Command.CMD_PROD_SEND:
-                producerSend(idClient,cmmd.getTopicName(),cmmd.getQueueName(),cmmd.getMessage());
-                break;
-            case Command.CMD_CONSUME:
-                consume(idClient,cmmd.getQueueName());
-            case Command.CMD_CONS_ACK:
-                consAck(idClient,cmmd.getQueueName());
-                break;
-            default:
-                break;
+        if(cmmd!=null){
+            switch(cmmd.getCmd()){
+                case Command.CMD_DEC_TOPIC:
+                    declareTopic(idClient, cmmd.getTopicName());
+                    break;
+                case Command.CMD_DEC_QUEUE:
+                    declareQueue(idClient,cmmd.getQueueName());
+                    break;
+                case Command.CMD_SUBS_QUEUE:
+                    subscribeQueue(idClient,cmmd.getTopicName(),cmmd.getQueueName());
+                    break;
+                case Command.CMD_PROD_SEND:
+                    producerSend(idClient,cmmd.getTopicName(),cmmd.getQueueName(),cmmd.getMessage());
+                    break;
+                case Command.CMD_CONSUME:
+                    consume(idClient,cmmd.getQueueName());
+                case Command.CMD_CONS_ACK:
+                    consAck(idClient,cmmd.getQueueName());
+                    break;
+                default:
+                    break;
+            }
         }
     }
     
