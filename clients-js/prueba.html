@@ -1,0 +1,78 @@
+<html>
+    <head>
+        <title> PRODUCTOR </title>
+        <!--<script src="js/msg.js"></script>-->
+    </head>
+
+    <body>
+        <h2>Prueba de Socket</h2>
+        <div>
+            <h3> Ingrese Exchange </h3>
+            <input type="text" id="input"/>
+
+            <h3> Ingrese cola </h3>
+            <input type="text" id="queue_name"/>
+
+            <h3> Ingrese Mensaje </h3>
+            <input type="text" id="message"/>
+        
+        </div>
+
+        <br>    
+        <div> 
+            <!--<input type="button" id="connectBtn" value="Conectar" onclick="connect()" />-->
+            <input type="button" id="sendBtn" value="Enviar" onclick="send()" disable="true" />
+        </div>   
+        
+        <div id="output">
+            <h2> Salida</h2>
+        </div>
+
+        <script type="text/javascript"> 
+            //var connection = new WebSocket('ws://127.0.0.1:4444');
+            var connection = new WebSocket('ws://127.0.0.1:4444');
+            var output = document.getElementById("output");
+            var connectBtn = document.getElementById("connectBtn");
+            var sendBtn = document.getElementById("sendBtn");
+            var cola= document.getElementById("queue_name");
+            var mensaje=document.getElementById("message")
+
+            connection.onopen = function (event) {
+                output.innerHTML += "<br/>" + "conectado";
+                console.log('Connected!');
+                connection.send('te saluda el cliente'); // Send the message 'Ping' to the server
+                //connectBtn.disabled = true;
+                //sendBtn.disabled = false;
+            };
+
+
+
+            connection.onmessage = function (e) {
+                console.log('Server: ' + e.data);
+                //updateOutput("te enviaron  un mensaje"  );
+                updateOutput(e.data);
+            };
+
+
+
+            function send(){
+            //var cad="("+cola.value+";"+mensaje.value+")";
+            var cad = "2,"+cola.value;
+            updateOutput("Enviaste mensage: "+ cad );
+            connection.send(cad); //Envia al server 
+            //updateOutput(" Intentando establecer una conexión WebSocket a <code>" + "</code>");
+            } 
+
+            function updateOutput(text){
+                output.innerHTML += "<br/>" + text;
+            }
+
+        
+        </script>
+
+
+    </body>
+
+
+
+</html>

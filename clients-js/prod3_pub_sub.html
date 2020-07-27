@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Prod1: Publisher/Subscriber</title>
+        <script type="text/javascript" src="js/api.js"></script>
+        <link rel="stylesheet" href="css/estilos.css">
+    </head>
+    <body>
+        <div class="row">
+            <div class="column">
+                <h1>Productor</h1>
+                <h2>Ejemplo 3:Publisher/Subscriber</h2>
+                <div>
+                    <h3> Direccion del Middleware </h3>
+                    <input type="text" id="addrInput"/>
+                </div>
+                <br> 
+                <div>
+                <input type="button" id="connBtn" value="Conectar" onclick="conectar()"/>
+                </div>
+                
+                <div>
+                    <h3> Escriba su mensaje</h3>
+                    <input type="text" id="msgInput" disabled/>
+                </div>
+                <br> 
+                <div>
+                <input type="button" id="sendBtn" value="Enviar Mensaje" onclick="send()" disabled/>
+                </div>
+            </div>
+            <div class="column">
+                <div id="output">
+                    <h2> Salida</h2>
+                </div>
+            </div>
+        </div>
+        
+        <script type="text/javascript" src="js/prod3_pub_sub.js"></script>
+    </body>
+</html>
