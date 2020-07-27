@@ -20,8 +20,8 @@ public class ConsumerEjm4 {
         System.out.println("Ingrese la direccion del middleware:");
         String hostAddr = sc.nextLine();
         
-        System.out.println("Ingrese el número de puerto del middleware:");
-        int numPort = Integer.parseInt(sc.nextLine());
+        //System.out.println("Ingrese el número de puerto del middleware:");
+        int numPort = 5555;//Integer.parseInt(sc.nextLine());
         
         String queueName = "rpc_queue";
         
@@ -37,7 +37,7 @@ public class ConsumerEjm4 {
                     String msg = message.getBody();
                     int n = Integer.parseInt(msg);
                     System.out.println("fib("+n+")");
-                    response += fib(n);
+                    response += "fib("+n+") = "+fib(n);
                     
                     channel.producerSend(null, message.getReplyQueue(), null, response);
                     channel.consAck(queueName);

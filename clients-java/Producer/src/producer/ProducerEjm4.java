@@ -25,8 +25,8 @@ public class ProducerEjm4 {
         System.out.println("Ingrese la direccion del middleware:");
         String hostAddr = sc.nextLine();
         
-        System.out.println("Ingrese el número de puerto del middleware:");
-        int numPort = Integer.parseInt(sc.nextLine());
+        //System.out.println("Ingrese el número de puerto del middleware:");
+        int numPort = 5555;//Integer.parseInt(sc.nextLine());
         
         try {
             RPCClient rpcc = new RPCClient(hostAddr, numPort);
