@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package numq.libs;
 
 /**
@@ -17,7 +12,7 @@ public class Message {
     
     public static Message parseMessage(String text){
         Message msg = new Message();
-        String[] tokens = text.split(",");
+        String[] tokens = text.split("\\|");
         if("".equals(tokens[0]))
             msg.setReplyQueue(null);
         else
@@ -29,9 +24,9 @@ public class Message {
     @Override
     public String toString() {
         if(replyQueue==null)
-            return ","+body;
+            return "|"+body;
         else
-            return replyQueue+","+body;
+            return replyQueue+"|"+body;
     }
     
     public String getReplyQueue() {

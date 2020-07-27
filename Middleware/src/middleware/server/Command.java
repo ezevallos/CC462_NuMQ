@@ -2,12 +2,12 @@ package middleware.server;
 
 /**
  * Comandos que se reciben en la comunicacion Cliente-Middleware
- * CMD_DEC_TOPIC: "1,topic_name"
- * CMD_DEC_QUEUE: "2,queue_name"
- * CMD_SUBS_QUEUE: "3,topic_name,queue_name"
- * CMD_PROD_SEND: "4,topic_name,queue_name,reply_queue,body"
- * CMD_CONSUME: "5,queue_name"
- * CMD_CONS_ACK: "6,queue_name"
+ * CMD_DEC_TOPIC: "1|topic_name"
+ * CMD_DEC_QUEUE: "2|queue_name"
+ * CMD_SUBS_QUEUE: "3|topic_name|queue_name"
+ * CMD_PROD_SEND: "4|topic_name|queue_name|reply_queue|body"
+ * CMD_CONSUME: "5|queue_name"
+ * CMD_CONS_ACK: "6|queue_name"
  * @author Victor
  */
 public class Command {
@@ -65,7 +65,7 @@ public class Command {
      */
     private static Command parseDecTopic(String msg){
         Command cmd = new Command();
-        String[] tokens = msg.split(",");
+        String[] tokens = msg.split("\\|");
         cmd.setCmd(CMD_DEC_TOPIC);
         cmd.setTopicName(tokens[1]);
         return cmd;
@@ -79,7 +79,7 @@ public class Command {
      */
     private static Command parseDecQueue(String msg){
         Command cmd = new Command();
-        String[] tokens = msg.split(",");
+        String[] tokens = msg.split("\\|");
         cmd.setCmd(CMD_DEC_QUEUE);
         cmd.setQueueName(tokens[1]);
         return cmd;
@@ -93,7 +93,7 @@ public class Command {
      */
     private static Command parseBindQueue(String msg){
         Command cmd = new Command();
-        String[] tokens = msg.split(",");
+        String[] tokens = msg.split("\\|");
         cmd.setCmd(CMD_SUBS_QUEUE);
         cmd.setTopicName(tokens[1]);
         cmd.setQueueName(tokens[2]);
@@ -109,7 +109,7 @@ public class Command {
     private static Command parseProdSend(String msg){
         Command cmd = new Command();
         Message message = null;
-        String[] tokens = msg.split(",");
+        String[] tokens = msg.split("\\|");
         cmd.setCmd(CMD_PROD_SEND);
         if("".equals(tokens[1]))
             cmd.setTopicName(null);
@@ -135,7 +135,7 @@ public class Command {
      */
     private static Command parseConsume(String msg){
         Command cmd = new Command();
-        String[] tokens = msg.split(",");
+        String[] tokens = msg.split("\\|");
         cmd.setCmd(CMD_CONSUME);
         cmd.setQueueName(tokens[1]);
         return cmd;
@@ -150,7 +150,7 @@ public class Command {
      */
     private static Command parseConsAck(String msg){
         Command cmd = new Command();
-        String[] tokens = msg.split(",");
+        String[] tokens = msg.split("\\|");
         cmd.setCmd(CMD_CONS_ACK);
         cmd.setQueueName(tokens[1]);
         return cmd;

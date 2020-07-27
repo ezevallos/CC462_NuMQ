@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package middleware.server;
 
 /**
@@ -24,14 +19,14 @@ public class Message {
 
     /**
      * Convierte a trama el mensaje
-     * @return "reply_queue,body"
+     * @return "reply_queue|body"
      */
     @Override
     public String toString() {
         if(replyQueue==null)
-            return ","+body;
+            return "|"+body;
         else
-            return replyQueue+","+body;
+            return replyQueue+"|"+body;
     }
     
     public String getReplyQueue() {

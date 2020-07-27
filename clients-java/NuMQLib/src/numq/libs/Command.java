@@ -5,12 +5,12 @@ import java.util.List;
 
 /**
  * Comandos que se envian en la comunicacion Cliente-Middleware
- * CMD_DEC_TOPIC: "1,topic_name"
- * CMD_DEC_QUEUE: "2,queue_name"
- * CMD_SUBS_QUEUE: "3,topic_name,queue_name"
- * CMD_PROD_SEND: "4,topic_name,queue_name,reply_queue,body"
- * CMD_CONSUME: "5,queue_name"
- * CMD_CONS_ACK: "6,queue_name"
+ * CMD_DEC_TOPIC: "1|topic_name"
+ * CMD_DEC_QUEUE: "2|queue_name"
+ * CMD_SUBS_QUEUE: "3|topic_name|queue_name"
+ * CMD_PROD_SEND: "4|topic_name|queue_name|reply_queue|body"
+ * CMD_CONSUME: "5|queue_name"
+ * CMD_CONS_ACK: "6|queue_name"
  * @author Victor
  */
 public class Command {
@@ -84,10 +84,10 @@ public class Command {
     
     @Override
     public String toString(){
-        //Retorna: "CMD_NUM,val1,val2,val3,..."
+        //Retorna: "CMD_NUM|val1|val2|val3|..."
         String str = ""+commandNum;
         if(values!=null)
-            str = values.stream().map((val) -> ","+val).reduce(str, String::concat);
+            str = values.stream().map((val) -> "|"+val).reduce(str, String::concat);
         return str;
     }
 }
